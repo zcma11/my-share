@@ -1,31 +1,72 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { getMessage, postMessage } from 'api'
+import { onMounted, ref } from 'vue'
+const msg = ref('')
+const loadingStatus = ref(false)
+const get = () => {
+  if (loadingStatus.value) return
+  loadingStatus.value = true
+  getMessage().then(m => {
+    msg.value = m
+    loadingStatus.value = false
+  })
+}
+
+const post = () => {
+  if (loadingStatus.value) return
+
+  loadingStatus.value = true
+
+  postMessage({ message: msg.value }).then(() => {
+    loadingStatus.value = false
+  })
+}
+
+onMounted(() => {
+  get()
+})
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="box">
+    <textarea v-model="msg" cols="80" rows="10"></textarea>
+    <div class="btn-group">
+      <button @click="post">send</button>
+      <button @click="get">update</button>
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <div class="loading" v-show="loadingStatus">loading...</div>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  background-color: rgba(187, 255, 170, 0.6);
+  border-radius: 10px;
+  color: rgb(252, 115, 197);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 50px;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+  height: 50px;
 }
 </style>

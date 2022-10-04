@@ -11,8 +11,11 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "api": ["./src/client/src/api/index.ts"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/client/src/**/*.ts", "src/client/src/**/*.d.ts", "src/client/src/**/*.tsx", "src/client/src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

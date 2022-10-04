@@ -16,11 +16,9 @@ app.use(async (ctx, next) => {
 let message = ''
 router
   .get('/message', async (ctx, next) => {
-    console.log('2')
     ctx.body = message
   })
   .post('/message', async (ctx, next) => {
-    console.log(ctx.request.body)
     if (typeof ctx.request.body?.message === 'string') {
       message = ctx.request.body.message
     }

@@ -28,22 +28,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="box">
-    <textarea v-model="msg" cols="80" rows="10"></textarea>
-    <div class="btn-group">
-      <button @click="post">send</button>
-      <button @click="get">update</button>
-    </div>
+  <textarea v-model="msg"></textarea>
+  <div class="btn-group">
+    <button @click="post">send</button>
+    <button @click="get">update</button>
   </div>
   <div class="loading" v-show="loadingStatus">loading...</div>
 </template>
 
 <style scoped>
-.box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+textarea {
+  flex: none;
+  width: 80vw;
+  height: 50vh;
 }
 
 .loading {
@@ -66,7 +63,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 200px;
+  width: 100%;
+  max-width: 200px;
   height: 50px;
+}
+
+.btn-group div {
+  margin-bottom: 10px;
 }
 </style>

@@ -1,10 +1,15 @@
 import axios from 'axios'
-const BASE_URL = 'http://localhost:5500'
+const BASE_URL = __BASE_URL__ + '/api'
 
-export const getMessage = () => axios.get(BASE_URL + '/message').then(e => {
-  console.log(e)
-  return e.data
+const apiAxios = axios.create({
+  baseURL: BASE_URL
 })
+
+export const getMessage = () =>
+  apiAxios.get('/message').then(e => {
+    return e.data
+  })
+
 export const postMessage = (data: Record<string, any>) => {
- return axios.post(BASE_URL + '/message', data)
+  return apiAxios.post('/message', data)
 }

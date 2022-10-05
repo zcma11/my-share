@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "client": "cd ./src/client && pnpm run dev",
-    "serve": "nodemon ./src/server/index.js"
+    "client:build": "cd ./src/client && pnpm run build",
+    "serve": "nodemon ./src/server/index.js watch src/client/dist"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +15,15 @@
     "axios": "^0.27.2",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
-    "koa-router": "^12.0.0"
+    "koa-router": "^12.0.0",
+    "koa-static": "^5.0.0",
+    "vue": "^3.2.40"
   },
   "devDependencies": {
-    "@types/node": "^18.8.1"
+    "@types/node": "^18.8.1",
+    "@vitejs/plugin-vue": "^3.1.2",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.4",
+    "vue-tsc": "^0.40.13"
   }
 }

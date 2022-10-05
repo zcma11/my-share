@@ -41,6 +41,7 @@ textarea {
   flex: none;
   width: 80vw;
   height: 50vh;
+  font-size: 20px;
 }
 
 .loading {

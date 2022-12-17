@@ -15,6 +15,7 @@ const CONST = import('../shared/const.mjs')
   const whiteList = [
     `${IP}:${PORT}`,
     `http://localhost:${PORT}`,
+    `http://127.0.0.1:${PORT}`,
     `http://127.0.0.1:5173`
   ]
   app.use(async (ctx, next) => {

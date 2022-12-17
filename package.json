@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "my-share": "./scripts/index.js"
+  },
   "scripts": {
     "client": "cd ./src/client && pnpm run dev",
     "client:build": "cd ./src/client && pnpm run build",
@@ -13,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "commander": "^9.4.1",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
     "koa-router": "^12.0.0",

@@ -1,75 +1,31 @@
 <script setup lang="ts">
-import { getMessage, postMessage } from 'api'
-import { onMounted, ref } from 'vue'
-const msg = ref('')
-const loadingStatus = ref(false)
-const get = () => {
-  if (loadingStatus.value) return
-  loadingStatus.value = true
-  getMessage().then(m => {
-    msg.value = m
-    loadingStatus.value = false
-  })
+import { ref } from 'vue'
+import type { TabsPaneContext } from 'element-plus'
+
+const activeName = ref('message')
+
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  console.log(tab, event)
 }
-
-const post = () => {
-  if (loadingStatus.value) return
-
-  loadingStatus.value = true
-
-  postMessage({ message: msg.value }).then(() => {
-    loadingStatus.value = false
-  })
-}
-
-onMounted(() => {
-  get()
-})
 </script>
 
 <template>
-  <textarea v-model="msg"></textarea>
-  <div class="btn-group">
-    <button @click="post">send</button>
-    <button @click="get">update</button>
-  </div>
-  <div class="loading" v-show="loadingStatus">loading...</div>
+  <el-tabs
+    v-model="activeName"
+    type="card"
+    class="demo-tabs"
+    @tab-click="handleClick"
+  >
+    <el-tab-pane label="message" name="message"><Message /></el-tab-pane>
+    <el-tab-pane label="file" name="file"><Upload /></el-tab-pane>
+  </el-tabs>
 </template>
 
 <style scoped>
-textarea {
-  flex: none;
-  width: 80vw;
-  height: 50vh;
-  font-size: 20px;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  background-color: rgba(187, 255, 170, 0.6);
-  border-radius: 10px;
-  color: rgb(252, 115, 197);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: 50px;
-}
-
-.btn-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 200px;
-  height: 50px;
-}
-
-.btn-group div {
-  margin-bottom: 10px;
+.demo-tabs > .el-tabs__content {
+  padding: 32px;
+  color: #6b778c;
+  font-size: 32px;
+  font-weight: 600;
 }
 </style>

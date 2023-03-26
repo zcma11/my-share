@@ -10,34 +10,47 @@ const CONST = import('../shared/const.mjs')
 const { exec } = require('child_process')
 
 const clientDir = path.resolve(__dirname, '../client/dist/')
+const [isDev] = process.argv.slice(2)
+
 
 ;(async () => {
   const { IP, PORT, DIR_ROOT } = await CONST
-
-  const fileNames = fs.readdirSync(path.resolve(clientDir, 'assets'))
+  const url = `http://${IP}:${PORT}`
   let isNeedRePack = false
-  console.log('pre-checking')
-  for (const fileName of fileNames) {
-    if (fileName.endsWith('.js')) {
-      const apiIp = `http://${IP}:${PORT}`
-      const content = fs.readFileSync(
-        path.resolve(clientDir, 'assets', fileName),
-        'utf-8'
-      )
 
-      isNeedRePack = !content.includes(apiIp)
+  const dist = path.resolve(clientDir, 'assets')
+  if (!fs.existsSync(dist)) {
+    isNeedRePack = true
+  } else {
+    const fileNames = fs.readdirSync(dist)
+
+    console.log('pre-checking')
+    if (fileNames.length > 0) {
+      for (const fileName of fileNames) {
+        if (fileName.endsWith('.js')) {
+          const content = fs.readFileSync(
+            path.resolve(clientDir, 'assets', fileName),
+            'utf-8'
+          )
+
+          isNeedRePack = !content.includes(url)
+        }
+      }
+    } else {
+      isNeedRePack = true
     }
   }
 
-  if (isNeedRePack) {
+  if (isDev || isNeedRePack) {
     try {
       await new Promise((resolve, reject) => {
+        console.log('\n> building source\n')
         exec(
           `${DIR_ROOT}: && cd ${path.resolve(
             __dirname,
             '../../'
           )} && pnpm run client:build`,
-          err => {
+          (err,p) => {
             if (err) {
               console.log(err)
               reject(err)
@@ -62,7 +75,6 @@ const clientDir = path.resolve(__dirname, '../client/dist/')
     `http://127.0.0.1:5173`
   ]
   app.use(async (ctx, next) => {
-    console.log(ctx.header.origin)
     if (whiteList.includes(ctx.header.origin)) {
       ctx.set('Access-Control-Allow-Origin', '*')
       ctx.set('Access-Control-Allow-Headers', '*')
@@ -97,6 +109,6 @@ const clientDir = path.resolve(__dirname, '../client/dist/')
   })
 
   app.listen(PORT, () => {
-    console.log('ok ', PORT)
+    console.log('ok ', url)
   })
 })()

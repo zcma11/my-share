@@ -8,10 +8,12 @@ const app = new Koa()
 const router = new Router()
 const CONST = import('../shared/const.mjs')
 const { exec } = require('child_process')
+const multer = require('@koa/multer')
+
+const upload = multer()
 
 const clientDir = path.resolve(__dirname, '../client/dist/')
 const [isDev] = process.argv.slice(2)
-
 
 ;(async () => {
   const { IP, PORT, DIR_ROOT } = await CONST
@@ -50,7 +52,7 @@ const [isDev] = process.argv.slice(2)
             __dirname,
             '../../'
           )} && pnpm run client:build`,
-          (err,p) => {
+          (err, p) => {
             if (err) {
               console.log(err)
               reject(err)
@@ -83,6 +85,8 @@ const [isDev] = process.argv.slice(2)
   })
 
   let message = ''
+  const cache = {}
+
   apiRouter
     .get('/message', async (ctx, next) => {
       ctx.body = message
@@ -92,6 +96,78 @@ const [isDev] = process.argv.slice(2)
         message = ctx.request.body.message
       }
       ctx.body = 'ok'
+    })
+    .post('/upload-chunk', upload.single('buffer'), async (ctx, next) => {
+      // console.log('ctx.request.files', ctx.request.files)
+      // console.log('ctx.files', ctx.files)
+      // console.log('ctx.file', ctx.file)
+      // console.log('ctx.request.body', ctx.request.body)
+      const { name, index, size } = ctx.request.body
+      cache[name].file[index] = {
+        buffer: ctx.file.buffer,
+        name,
+        index,
+        size
+      }
+
+      ctx.body = 'ok'
+    })
+    .post('/upload-placeholder', async ctx => {
+      const data = ctx.request.body
+
+      if (cache[data.id]) {
+        ctx.status = 404
+        ctx.body = ''
+        return
+      }
+
+      cache[data.id] = {
+        info: data,
+        file: {}
+      }
+
+      ctx.body = 'ok'
+    })
+    .get('/download', async ctx => {
+      const { id: _id } = ctx.query
+      const id = encodeURIComponent(_id)
+
+      if (!cache[id]) {
+        ctx.status = 404
+        ctx.body = ''
+        return
+      }
+
+      ctx.set('content-disposition', `attachment`)
+      ctx.type = cache[id].info.type
+      ctx.body = cache[id].mergedBuffer
+    })
+    .get('/download-lsit', async ctx => {
+      ctx.body = Object.keys(cache)
+        .map(id => cache[id].info)
+        .sort((a, b) => a.time - b.time)
+    })
+    .get('/success', async ctx => {
+      const { id: _id } = ctx.query
+      const id = encodeURIComponent(_id)
+
+      if (!cache[id]) {
+        ctx.status = 404
+        ctx.body = ''
+        return
+      }
+
+      const fileItem = cache[id]
+
+      fileItem.info.status = 'success'
+      fileItem.info.src = `/api/download?id=${id}`
+      fileItem.mergedBuffer = Buffer.concat(
+        Object.keys(fileItem.file)
+          .sort((a, b) => Number(a) - Number(b))
+          .map(i => fileItem.file[i].buffer)
+      )
+
+      ctx.body = fileItem.info
     })
 
   app.use(body())

@@ -28,4 +28,10 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   font-size: 32px;
   font-weight: 600;
 }
+
+.el-tab-pane {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
 </style>

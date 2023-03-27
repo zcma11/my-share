@@ -1,9 +1,4 @@
-import axios from 'axios'
-const BASE_URL = __BASE_URL__ + '/api'
-
-const apiAxios = axios.create({
-  baseURL: BASE_URL
-})
+import { apiAxios } from './base'
 
 export const getMessage = () =>
   apiAxios.get('/message').then(e => {
@@ -13,3 +8,5 @@ export const getMessage = () =>
 export const postMessage = (data: Record<string, any>) => {
   return apiAxios.post('/message', data)
 }
+
+export * from './file'

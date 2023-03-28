@@ -86,6 +86,11 @@ const [isDev] = process.argv.slice(2)
 
   let message = ''
   const cache = {}
+  const getFileList = () => {
+    return Object.keys(cache)
+      .map(id => cache[id].info)
+      .sort((a, b) => a.createAt - b.createAt)
+  }
 
   apiRouter
     .get('/message', async (ctx, next) => {
@@ -128,6 +133,11 @@ const [isDev] = process.argv.slice(2)
 
       ctx.body = 'ok'
     })
+    .post('/delete-file', async ctx => {
+      const { id } = ctx.request.body
+      delete cache[encodeURIComponent(id)]
+      ctx.body = getFileList()
+    })
     .get('/download', async ctx => {
       const { id: _id } = ctx.query
       const id = encodeURIComponent(_id)
@@ -143,9 +153,7 @@ const [isDev] = process.argv.slice(2)
       ctx.body = cache[id].mergedBuffer
     })
     .get('/download-lsit', async ctx => {
-      ctx.body = Object.keys(cache)
-        .map(id => cache[id].info)
-        .sort((a, b) => a.time - b.time)
+      ctx.body = getFileList()
     })
     .get('/success', async ctx => {
       const { id: _id } = ctx.query

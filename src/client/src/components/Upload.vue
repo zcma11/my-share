@@ -9,13 +9,16 @@
     @change="onChange"
   />
   <div class="list">
-    <span v-for="fi of uploadingList"
-      ><a :href="fi.src + `&timestamp=${Date.now()}`" :download="fi.name">{{
-        fi.name
-      }}</a>
+    <span v-for="fi in uploadingList"
+      ><a
+        :key="fi.name"
+        :href="fi.src + `&timestamp=${Date.now()}`"
+        :download="fi.name"
+        >{{ fi.name }}</a
+      >
       / {{ formatSize(fi.size) }} / {{ fi.type }}&nbsp;&nbsp;&nbsp;{{
         fi.status
-      }}&nbsp;&nbsp;<button>删除</button></span
+      }}&nbsp;&nbsp;<button @click="remove(fi.name)">删除</button></span
     >
   </div>
 </template>
@@ -24,6 +27,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import {
   BufferItem,
+  deleteFile,
   fileListType,
   getFileList,
   postFile,
@@ -32,11 +36,11 @@ import {
 } from '../api'
 
 const input = ref(null)
-const uploadingList = reactive<fileListType[]>([])
+const uploadingList = ref<fileListType[]>([])
 
 onMounted(() => {
   getFileList().then(v => {
-    uploadingList.push(...v)
+    uploadingList.value = reactive(v)
   })
 })
 
@@ -56,7 +60,7 @@ const onChange = (e: any) => {
     })
 
     postFileItemInfo(fileListItem).then(() => {
-      uploadingList.push(fileListItem)
+      uploadingList.value.push(fileListItem)
 
       const chunks = slice(file)
       const chunkItemData = chunks.map<BufferItem>((b, index) => {
@@ -111,6 +115,12 @@ const formatSize = (size: number) => {
 
   const g = m / 1024
   return `${g.toFixed(2)} GB`
+}
+
+const remove = (name: string) => {
+  deleteFile({ id: name }).then(v => {
+    uploadingList.value = reactive(v)
+  })
 }
 </script>
 

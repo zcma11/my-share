@@ -39,3 +39,7 @@ export const postFile = (data: BufferItem) => {
 export const postSuccess = (name: string) => {
   return apiAxios.get(`/success?id=${name}`).then(e => e.data)
 }
+
+export const deleteFile = (data: { id: string }) => {
+  return apiAxios.post(`/delete-file`, data).then(e => e.data)
+}

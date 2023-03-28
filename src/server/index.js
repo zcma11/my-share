@@ -13,7 +13,13 @@ const multer = require('@koa/multer')
 const upload = multer()
 
 const clientDir = path.resolve(__dirname, '../client/dist/')
-const [isDev] = process.argv.slice(2)
+const isDev = process.argv.includes('-re')
+const rootDir = path.resolve(process.cwd())
+let config = {}
+
+if (fs.existsSync(path.join(rootDir, 'my-share.config.js'))) {
+  config = require(path.join(rootDir, 'my-share.config.js'))
+}
 
 ;(async () => {
   const { IP, PORT, DIR_ROOT } = await CONST
@@ -73,9 +79,13 @@ const [isDev] = process.argv.slice(2)
   const whiteList = [
     `${IP}:${PORT}`,
     `http://localhost:${PORT}`,
-    `http://127.0.0.1:${PORT}`,
-    `http://127.0.0.1:5173`
+    `http://127.0.0.1:${PORT}`
   ]
+
+  if (Array.isArray(config.whiteList)) {
+    whiteList.push(...config.whiteList)
+  }
+
   app.use(async (ctx, next) => {
     if (whiteList.includes(ctx.header.origin)) {
       ctx.set('Access-Control-Allow-Origin', '*')
@@ -85,7 +95,7 @@ const [isDev] = process.argv.slice(2)
   })
 
   let message = ''
-  const cache = {}
+  let cache = {}
   const getFileList = () => {
     return Object.keys(cache)
       .map(id => cache[id].info)
@@ -138,6 +148,10 @@ const [isDev] = process.argv.slice(2)
       delete cache[encodeURIComponent(id)]
       ctx.body = getFileList()
     })
+    .post('/delete-all', async ctx => {
+      cache = {}
+      ctx.body = 'ok'
+    })
     .get('/download', async ctx => {
       const { id: _id } = ctx.query
       const id = encodeURIComponent(_id)
@@ -183,10 +197,6 @@ const [isDev] = process.argv.slice(2)
   router.use(apiRouter.routes(), apiRouter.allowedMethods())
   app.use(router.routes()).use(router.allowedMethods())
   app.use(serve(clientDir))
-
-  // app.use(async (ctx, next) => {
-  //   const prefix = ctx.url.split('/')
-  // })
 
   app.on('error', e => {
     console.log(e)

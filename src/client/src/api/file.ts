@@ -43,3 +43,7 @@ export const postSuccess = (name: string) => {
 export const deleteFile = (data: { id: string }) => {
   return apiAxios.post(`/delete-file`, data).then(e => e.data)
 }
+
+export const deleteFileAll = () => {
+  return apiAxios.post('/delete-all')
+}

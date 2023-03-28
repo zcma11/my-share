@@ -8,8 +8,12 @@
     multiple
     @change="onChange"
   />
+  <div class="btn-group">
+    <button @click="downloadAll">download all</button>
+    <button @click="removeAll">clear all</button>
+  </div>
   <div class="list">
-    <span v-for="fi in uploadingList"
+    <span v-for="fi in uploadingList" ref="downloadLinks"
       ><a
         :key="fi.name"
         :href="fi.src + `&timestamp=${Date.now()}`"
@@ -28,6 +32,7 @@ import { onMounted, reactive, ref } from 'vue'
 import {
   BufferItem,
   deleteFile,
+  deleteFileAll,
   fileListType,
   getFileList,
   postFile,
@@ -36,6 +41,7 @@ import {
 } from '../api'
 
 const input = ref(null)
+const downloadLinks = ref<HTMLSpanElement[]>([])
 const uploadingList = ref<fileListType[]>([])
 
 onMounted(() => {
@@ -122,6 +128,19 @@ const remove = (name: string) => {
     uploadingList.value = reactive(v)
   })
 }
+
+const downloadAll = () => {
+  downloadLinks.value.forEach(el => {
+    const a = el.querySelector('a')
+    a && a.click()
+  })
+}
+
+const removeAll = () => {
+  deleteFileAll().then(() => {
+    uploadingList.value = reactive([])
+  })
+}
 </script>
 
 <style>
@@ -131,6 +150,17 @@ const remove = (name: string) => {
   justify-content: center;
   align-items: center;
   font-weight: bold;
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+}
+
+.btn-group > button:not(:nth-child(1)) {
+  margin-left: 35px;
 }
 
 .list {

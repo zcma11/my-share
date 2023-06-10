@@ -34,6 +34,8 @@ export default defineConfig({
 
   build: {
     //   watch: _resolve('.')
-    sourcemap: true
+    sourcemap: true,
+    outDir: path.resolve(process.cwd(), '../views'),
+    emptyOutDir: true
   }
 })

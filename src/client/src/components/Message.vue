@@ -31,7 +31,7 @@ onMounted(() => {
   <textarea v-model="msg"></textarea>
   <div class="btn-group">
     <button @click="post">send</button>
-    <button @click="get">update</button>
+    <button @click="get">receive latest message</button>
   </div>
   <div class="loading" v-show="loadingStatus">loading...</div>
 </template>
@@ -60,14 +60,18 @@ textarea {
 
 .btn-group {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 200px;
-  height: 50px;
+  /* height: 50px; */
+  margin-top: 15px;
+  flex-wrap: wrap;
 }
 
-.btn-group div {
+.btn-group button {
   margin-bottom: 10px;
+}
+
+.btn-group button:nth-child(1) {
+  margin-right: 30px;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <label for="upload" class="upload-window">+</label>
+  <p>status(pengding) will change to <s>success</s> when uploading completely</p>
   <input
     :style="{ display: 'none' }"
     id="upload"
@@ -11,6 +12,7 @@
   <div class="btn-group">
     <button @click="downloadAll">download all</button>
     <button @click="removeAll">clear all</button>
+    <button @click="removeAll">download </button>
   </div>
   <div class="list">
     <span v-for="fi in uploadingList" ref="downloadLinks"
@@ -20,9 +22,9 @@
         :download="fi.name"
         >{{ fi.name }}</a
       >
-      / {{ formatSize(fi.size) }} / {{ fi.type }}&nbsp;&nbsp;&nbsp;{{
+      / {{ formatSize(fi.size) }} / {{ fi.type }}&nbsp;&nbsp;&nbsp;<span :class="statusColor(fi.status)">{{
         fi.status
-      }}&nbsp;&nbsp;<button @click="remove(fi.name)">删除</button></span
+      }}</span>&nbsp;&nbsp;<button @click="remove(fi.name)">delete</button></span
     >
   </div>
 </template>
@@ -39,7 +41,10 @@ import {
   postFileItemInfo,
   postSuccess
 } from '../api'
-
+// for(i; i < b + 12 && i < a.length; i++) {
+//     a.item(i).querySelector('a').click()
+// }
+// b = i
 const input = ref(null)
 const downloadLinks = ref<HTMLSpanElement[]>([])
 const uploadingList = ref<fileListType[]>([])
@@ -123,6 +128,15 @@ const formatSize = (size: number) => {
   return `${g.toFixed(2)} GB`
 }
 
+const statusColor = (status: fileListType['status']) => {
+  switch (status) {
+    case 'success':
+      return 'status-success'
+      case 'uploading':
+        return 'status-warning'
+  }
+}
+
 const remove = (name: string) => {
   deleteFile({ id: name }).then(v => {
     uploadingList.value = reactive(v)
@@ -143,7 +157,7 @@ const removeAll = () => {
 }
 </script>
 
-<style>
+<style scoped>
 .upload-window {
   font-size: 40px;
   display: flex;
@@ -170,5 +184,13 @@ const removeAll = () => {
 
 .list > span {
   margin-top: 10px;
+}
+
+.status-success {
+  color: '#00D527'
+}
+
+.status-warning {
+  color: '#D56700'
 }
 </style>

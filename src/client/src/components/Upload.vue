@@ -1,6 +1,8 @@
 <template>
   <label for="upload" class="upload-window">+</label>
-  <p>status(pengding) will change to <s>success</s> when uploading completely</p>
+  <p>
+    status(pengding) will change to <s>success</s> when uploading completely
+  </p>
   <input
     :style="{ display: 'none' }"
     id="upload"
@@ -12,7 +14,7 @@
   <div class="btn-group">
     <button @click="downloadAll">download all</button>
     <button @click="removeAll">clear all</button>
-    <button @click="removeAll">download </button>
+    <button @click="removeAll">download</button>
   </div>
   <div class="list">
     <span v-for="fi in uploadingList" ref="downloadLinks"
@@ -22,9 +24,15 @@
         :download="fi.name"
         >{{ fi.name }}</a
       >
-      / {{ formatSize(fi.size) }} / {{ fi.type }}&nbsp;&nbsp;&nbsp;<span :class="statusColor(fi.status)">{{
+      / <span>{{ formatSize(fi.size) }}</span> /
+      <span style="color: #999">{{ fi.type }}</span
+      >&nbsp;&nbsp;&nbsp;<span :class="statusColor(fi.status)">{{
         fi.status
-      }}</span>&nbsp;&nbsp;<button @click="remove(fi.name)">delete</button></span
+      }}</span
+      >&nbsp;&nbsp;<button @click="remove(fi.name)">delete</button
+      >&nbsp;&nbsp;<span style="color: #999">{{
+        new Date(fi.createAt)
+      }}</span></span
     >
   </div>
 </template>
@@ -132,8 +140,8 @@ const statusColor = (status: fileListType['status']) => {
   switch (status) {
     case 'success':
       return 'status-success'
-      case 'uploading':
-        return 'status-warning'
+    case 'uploading':
+      return 'status-warning'
   }
 }
 
@@ -187,10 +195,10 @@ const removeAll = () => {
 }
 
 .status-success {
-  color: '#00D527'
+  color: #00d527;
 }
 
 .status-warning {
-  color: '#D56700'
+  color: #d56700;
 }
 </style>

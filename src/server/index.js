@@ -12,7 +12,7 @@ const multer = require('@koa/multer')
 
 const upload = multer()
 
-const clientDir = path.resolve(__dirname, '../client/dist/')
+const clientDir = path.resolve(__dirname, '../views/')
 const isDev = process.argv.includes('-re')
 const rootDir = path.resolve(process.cwd())
 let config = {}
@@ -27,6 +27,7 @@ if (fs.existsSync(path.join(rootDir, 'my-share.config.js'))) {
   let isNeedRePack = false
 
   const dist = path.resolve(clientDir, 'assets')
+
   if (!fs.existsSync(dist)) {
     isNeedRePack = true
   } else {

@@ -69,6 +69,7 @@ textarea {
 
 .btn-group button {
   margin-bottom: 10px;
+  white-space: nowrap;
 }
 
 .btn-group button:nth-child(1) {

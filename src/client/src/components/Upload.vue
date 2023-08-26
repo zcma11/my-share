@@ -15,6 +15,7 @@
     <button @click="downloadAll">download all</button>
     <button @click="removeAll">clear all</button>
     <button @click="removeAll">download</button>
+    <button @click="getList">refresh</button>
   </div>
   <div class="list">
     <span v-for="fi in uploadingList" ref="downloadLinks"
@@ -58,10 +59,14 @@ const downloadLinks = ref<HTMLSpanElement[]>([])
 const uploadingList = ref<fileListType[]>([])
 
 onMounted(() => {
+  getList()
+})
+
+const getList = () => {
   getFileList().then(v => {
     uploadingList.value = reactive(v)
   })
-})
+}
 
 const onChange = (e: any) => {
   for (const file of e.target.files as File[]) {
